@@ -1,0 +1,16 @@
+.SK54AFL-TP :1 ;Diode 40 V 5A Surface Mount DO-221AC (SMA-FL)
+SK54AFLTP
+*STM D
+*NGS
+*PLB 1="K" 2="A"
+*MXP 2
+*DFN SK54AFL-TP
+~!Mouser Part Number (833-SK54AFL-TP)
+~!Link Mouser Price/Stock (https://www.mouser.co.uk/ProductDetail/Micro-Commercial-Components-MCC/SK54AFL-TP?qs=%2F9jDaHz9Z2gBQB3PYEbhqg%3D%3D)
+~!Manufacturer_Name (MCC)
+~!Manufacturer_Part_Number (SK54AFL-TP)
+~!Link Datasheet (https://mccsemi.com/pdf/Products/SK52AFL-SK5200AFL(DO-221AC).pdf)
+~!Height (1.25mm)
+~!3D_Model (SK54AFL-TP)
+SK54AFL-TP
+1.1!U 2.1!U 

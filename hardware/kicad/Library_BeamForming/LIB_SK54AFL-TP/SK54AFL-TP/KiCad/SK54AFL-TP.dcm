@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP SK54AFL-TP
+D Diode 40 V 5A Surface Mount DO-221AC (SMA-FL)
+K
+F https://mccsemi.com/pdf/Products/SK52AFL-SK5200AFL(DO-221AC).pdf
+$ENDCMP
+#
+#End Doc Library

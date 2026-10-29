@@ -1,0 +1,9 @@
+Manufacturer=MCC
+PartNumber=SK54AFL-TP
+PartCategory=Schottky Diode
+PackageCategory=Other
+PinCount=2
+Version=6.3
+Released=2018-10-30 19:15:13
+Downloaded=2026-10-12 07:10:19
+3D=Y

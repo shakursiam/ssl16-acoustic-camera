@@ -1,0 +1,433 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "ed6a4c98-d8b0-435a-8232-853a78ab1ff7")
+	(paper "A4")
+	(title_block
+		(title "Sound Source Localization_Beam forming")
+		(date "2026-10-10")
+		(rev "v1.0")
+		(company "BUET Photonics Lab")
+	)
+	(lib_symbols)
+	(text "ADC-4 \nM5, M8, M13, M16"
+		(exclude_from_sim no)
+		(at 219.329 129.921 0)
+		(effects
+			(font
+				(face "Tahoma")
+				(size 3.048 3.048)
+				(thickness 0.254)
+				(bold yes)
+			)
+		)
+		(uuid "02ff65cb-ce7e-42cd-8f7a-33cb4c236a6c")
+	)
+	(text "ADC-3 \nM3, M6, M11, M14"
+		(exclude_from_sim no)
+		(at 137.541 127.889 0)
+		(effects
+			(font
+				(face "Tahoma")
+				(size 3.048 3.048)
+				(thickness 0.254)
+				(bold yes)
+			)
+		)
+		(uuid "09fcd697-c0b2-4ac0-a2bd-04f9169a2bf4")
+	)
+	(text "ADC-2 \nM1, M4, M9, M12"
+		(exclude_from_sim no)
+		(at 219.075 81.788 0)
+		(effects
+			(font
+				(face "Tahoma")
+				(size 3.048 3.048)
+				(thickness 0.254)
+				(bold yes)
+			)
+		)
+		(uuid "24ae054d-f54f-4ad1-940e-44d1b71d367e")
+	)
+	(text "TDM_CLOCK"
+		(exclude_from_sim no)
+		(at 219.964 46.736 0)
+		(effects
+			(font
+				(face "Tahoma")
+				(size 3.048 3.048)
+				(thickness 0.254)
+				(bold yes)
+			)
+		)
+		(uuid "37970559-2059-484c-9564-1cfb5549e2ac")
+	)
+	(text "SD-Card"
+		(exclude_from_sim no)
+		(at 71.12 134.112 0)
+		(effects
+			(font
+				(face "Tahoma")
+				(size 5.08 5.08)
+				(thickness 0.254)
+				(bold yes)
+			)
+		)
+		(uuid "62eefdb5-ef51-45b4-b0dd-2bb75fc163ec")
+	)
+	(text "ADC-1 \nM2, M7, M10, M15"
+		(exclude_from_sim no)
+		(at 140.335 82.169 0)
+		(effects
+			(font
+				(face "Tahoma")
+				(size 3.048 3.048)
+				(thickness 0.254)
+				(bold yes)
+			)
+		)
+		(uuid "85c4c8a6-f7e7-48dd-abe1-8d0c8e09e220")
+	)
+	(text "MCU & Power"
+		(exclude_from_sim no)
+		(at 70.358 88.519 0)
+		(effects
+			(font
+				(face "Tahoma")
+				(size 5.08 5.08)
+				(thickness 0.254)
+				(bold yes)
+			)
+		)
+		(uuid "d5acb069-086f-46d9-aabc-c360ba9cda53")
+	)
+	(sheet
+		(at 182.245 33.655)
+		(size 77.47 26.035)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "0da46ba7-bd75-40a3-b5fb-1cd003469915")
+		(property "Sheetname" "TDM"
+			(at 182.245 32.9434 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "tdm.kicad_sch"
+			(at 182.245 60.2746 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Beamfoarming_16x"
+				(path "/ed6a4c98-d8b0-435a-8232-853a78ab1ff7"
+					(page "9")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 43.18 66.04)
+		(size 53.975 35.56)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "22e3efb3-712e-4616-bae3-af9371706dcb")
+		(property "Sheetname" "MCU"
+			(at 43.18 65.3284 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "MCU_sch.kicad_sch"
+			(at 43.18 102.1846 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Beamfoarming_16x"
+				(path "/ed6a4c98-d8b0-435a-8232-853a78ab1ff7"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 43.18 111.125)
+		(size 53.34 37.465)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "3fbdf60a-2b0c-48c6-b4d2-78023d31ff4f")
+		(property "Sheetname" "SD Card"
+			(at 43.18 110.4134 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sdcard.kicad_sch"
+			(at 43.18 149.1746 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Beamfoarming_16x"
+				(path "/ed6a4c98-d8b0-435a-8232-853a78ab1ff7"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 182.88 110.49)
+		(size 75.565 36.83)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "7c208a1b-9e8b-4cd6-acce-d224422bbedc")
+		(property "Sheetname" "ADC_4"
+			(at 182.88 109.7784 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "adc_4.kicad_sch"
+			(at 182.88 147.9046 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Beamfoarming_16x"
+				(path "/ed6a4c98-d8b0-435a-8232-853a78ab1ff7"
+					(page "7")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 102.235 65.405)
+		(size 76.835 36.195)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "8ddd07f9-046c-41c7-9efb-60e12ee61b04")
+		(property "Sheetname" "ADC_1"
+			(at 102.235 64.6934 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "adc_1.kicad_sch"
+			(at 102.235 102.1846 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Beamfoarming_16x"
+				(path "/ed6a4c98-d8b0-435a-8232-853a78ab1ff7"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 102.235 111.125)
+		(size 75.565 36.195)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "d62eff25-7ba4-444c-961a-baf563807dcd")
+		(property "Sheetname" "ADC_3"
+			(at 102.235 110.4134 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "adc_3.kicad_sch"
+			(at 102.235 147.9046 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Beamfoarming_16x"
+				(path "/ed6a4c98-d8b0-435a-8232-853a78ab1ff7"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 182.245 65.405)
+		(size 76.835 36.195)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "f6b71884-9741-48ce-8284-fc5c77f332eb")
+		(property "Sheetname" "ADC_2"
+			(at 182.245 64.6934 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "adc_2.kicad_sch"
+			(at 182.245 102.1846 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Beamfoarming_16x"
+				(path "/ed6a4c98-d8b0-435a-8232-853a78ab1ff7"
+					(page "8")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)

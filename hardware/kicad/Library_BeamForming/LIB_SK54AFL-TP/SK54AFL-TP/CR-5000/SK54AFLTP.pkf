@@ -1,0 +1,10 @@
+(unit MM)
+
+(package "SK54AFLTP"
+    (type UNDEF)
+    (uver 2)
+    (mountForm default
+        (footprintRef "SK54AFLTP")
+        (spec "default")
+    )
+)

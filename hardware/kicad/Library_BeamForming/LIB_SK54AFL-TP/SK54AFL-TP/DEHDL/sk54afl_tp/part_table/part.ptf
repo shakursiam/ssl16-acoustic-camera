@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART 'SK54AFL_TP'
+CLASS = DISCRETE
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "MCC", "SK54AFL-TP" (!) = "", "SK54AFLTP", "Other", "833-SK54AFL-TP", "https://www.mouser.co.uk/ProductDetail/Micro-Commercial-Components-MCC/SK54AFL-TP?qs=%2F9jDaHz9Z2gBQB3PYEbhqg%3D%3D", "Diode 40 V 5A Surface Mount DO-221AC (SMA-FL)", "https://mccsemi.com/pdf/Products/SK52AFL-SK5200AFL(DO-221AC).pdf", "1.25 mm"
+END_PART
+
+END.

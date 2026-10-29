@@ -1,0 +1,68 @@
+** Drc report for Beamfoarming_16x.kicad_pcb **
+** Created on 2026-10-29T23:49:03 **
+** Report includes: Errors, Warnings **
+
+** Found 1 DRC violations **
+[text_height]: Text height out of range (board setup constraints silk text height min height 1.0000 mm; actual 0.8000 mm)
+    Rule: board setup constraints silk text height; warning
+    @(138.8600 mm, 103.9200 mm): Footprint text of D6 (1)
+
+** Found 0 unconnected pads **
+
+** Found 13 Footprint errors **
+[duplicate_footprints]: Duplicate footprints
+    Local override; warning
+    @(97.0600 mm, 216.5100 mm): Footprint REF**
+    @(300.0400 mm, 216.5100 mm): Footprint REF**
+[duplicate_footprints]: Duplicate footprints
+    Local override; warning
+    @(300.0400 mm, 63.9800 mm): Footprint REF**
+    @(300.0400 mm, 216.5100 mm): Footprint REF**
+[duplicate_footprints]: Duplicate footprints
+    Local override; warning
+    @(169.8900 mm, 63.9000 mm): Footprint REF**
+    @(300.0400 mm, 216.5100 mm): Footprint REF**
+[missing_footprint]: Missing footprint TP3__3V3 (~)
+    Local override; warning
+[net_conflict]: No corresponding pin found in schematic
+    Local override; warning
+    @(84.4135 mm, 178.1650 mm): Pad 11 [GND] of J601 on B.Cu
+[net_conflict]: No corresponding pin found in schematic
+    Local override; warning
+    @(84.6385 mm, 189.4850 mm): Pad 12 [GND] of J601 on B.Cu
+[net_conflict]: No corresponding pin found in schematic
+    Local override; warning
+    @(95.1135 mm, 187.4600 mm): Pad 13 [GND] of J601 on B.Cu
+[net_conflict]: No corresponding pin found in schematic
+    Local override; warning
+    @(95.1135 mm, 181.4900 mm): Pad 14 [GND] of J601 on B.Cu
+[extra_footprint]: Extra footprint
+    Local override; warning
+    @(300.0400 mm, 216.5100 mm): Footprint REF**
+[extra_footprint]: Extra footprint
+    Local override; warning
+    @(97.0600 mm, 216.5100 mm): Footprint REF**
+[extra_footprint]: Extra footprint
+    Local override; warning
+    @(300.0400 mm, 63.9800 mm): Footprint REF**
+[extra_footprint]: Extra footprint
+    Local override; warning
+    @(169.8900 mm, 63.9000 mm): Footprint REF**
+[extra_footprint]: Extra footprint
+    Local override; warning
+    @(151.3900 mm, 91.7800 mm): Footprint __3V3
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Silkscreen clearance
+    - Silkscreen clipped by solder mask
+    - Text thickness out of range
+    - Non-Mirrored text on back layer
+    - Footprint component type doesn't match footprint pads
+    - Footprint not found in libraries
+    - Footprint doesn't match copy in library
+
+** End of Report **

@@ -81,36 +81,48 @@ flowchart TD
     end
 
     %% Audio Analog Connections
-    MIC4 -->|4× Diff Pairs| U4
-    MIC3 -->|4× Diff Pairs| U3
-    MIC2 -->|4× Diff Pairs| U2
-    MIC1 -->|4× Diff Pairs| U1
+    MIC4 -->|"4x Diff Pairs"| U4
+    MIC3 -->|"4x Diff Pairs"| U3
+    MIC2 -->|"4x Diff Pairs"| U2
+    MIC1 -->|"4x Diff Pairs"| U1
 
     %% Clocks
-    R22 -->|MCLK (24.576 MHz)| U4
-    U4 -->|BCLK (12.288 MHz)| R27 --> U10
-    U10 -->|Y0| R13 --> U1
-    U10 -->|Y1| R14 --> U2
-    U10 -->|Y2| R15 --> U3
-    U10 -->|Y3| R16 -->|IO6 (BCLK)| U5
+    R22 -->|"MCLK (24.576 MHz)"| U4
+    U4 -->|"BCLK (12.288 MHz)"| R27
+    R27 --> U10
+    U10 -->|"Y0"| R13
+    R13 --> U1
+    U10 -->|"Y1"| R14
+    R14 --> U2
+    U10 -->|"Y2"| R15
+    R15 --> U3
+    U10 -->|"Y3"| R16
+    R16 -->|"IO6 (BCLK)"| U5
 
     %% FSYNC Fly-by
-    U4 -->|FSYNC (48 kHz)| R28 --> U3 --> U2 --> U1 -->|IO7 (FSYNC)| U5
+    U4 -->|"FSYNC (48 kHz)"| R28
+    R28 --> U3
+    U3 --> U2
+    U2 --> U1
+    U1 -->|"IO7 (FSYNC)"| U5
     U5 --- TERM
 
     %% Data Daisy-Chain
-    U4 -->|SDOUT via R26| U3 -->|SDOUT via R25| U2 -->|SDOUT via R23| U1 -->|SDOUT via R24 / I2S_DIN| U5
+    U4 -->|"SDOUT via R26"| U3
+    U3 -->|"SDOUT via R25"| U2
+    U2 -->|"SDOUT via R23"| U1
+    U1 -->|"SDOUT via R24 / I2S_DIN"| U5
 
     %% I2C & Control
-    U5 -->|IO8 SDA / IO9 SCL (2.2 kΩ Pull-ups)| U1
-    U5 -.->|I2C| U2
-    U5 -.->|I2C| U3
-    U5 -.->|I2C| U4
-    U5 -.->|I2C| TMP
-    U5 -->|IO11 SHDNZ (100 kΩ Pull-down)| U1
-    U5 -.->|SHDNZ| U2
-    U5 -.->|SHDNZ| U3
-    U5 -.->|SHDNZ| U4
+    U5 -->|"IO8 SDA / IO9 SCL (2.2 kOhm Pull-ups)"| U1
+    U5 -.->|"I2C"| U2
+    U5 -.->|"I2C"| U3
+    U5 -.->|"I2C"| U4
+    U5 -.->|"I2C"| TMP
+    U5 -->|"IO11 SHDNZ (100 kOhm Pull-down)"| U1
+    U5 -.->|"SHDNZ"| U2
+    U5 -.->|"SHDNZ"| U3
+    U5 -.->|"SHDNZ"| U4
 ```
 
 ---

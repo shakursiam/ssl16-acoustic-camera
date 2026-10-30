@@ -6,7 +6,7 @@ The **SSL-16** microphone array employs a 16-element **Vogel (Sunflower) spiral*
 
 ### Acoustic Bandwidth
 - **Lower Operating Bound ($\sim 1.5\,\text{kHz}$):** Sound wavelengths below $1.5\,\text{kHz}$ ($\lambda \ge 22.8\,\text{cm}$) exceed the physical aperture diameter ($16\,\text{cm}$), resulting in a broad main lobe and negligible spatial resolution.
-- **Upper Operating Bound ($\sim 6.0\,\text{kHz}$):** The sunflower distribution breaks spatial periodicity, suppressing spatial aliasing and eliminating grating lobes up to $6.0\,\text{kHz}$ ($\lambda \approx 5.7\,\text{cm}$).
+- **Upper Operating Bound ($\sim 6.0\,\text{kHz}$):** The aperiodic Vogel spiral geometry breaks spatial lattice periodicity, suppressing coherent spatial grating lobes and dispersing aliasing energy into a low, pseudo-random sidelobe floor across the visible region up to $6.0\,\text{kHz}$ ($\lambda \approx 5.7\,\text{cm}$).
 - **Usable Beamforming Band:** **1.5 kHz to 6.0 kHz** (ideal for urban vehicle horn acoustic localization, which predominantly concentrates energy between 2.0 kHz and 4.5 kHz).
 
 ---

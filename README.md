@@ -216,6 +216,7 @@ Detailed engineering documentation is organized inside [`docs/`](file:///h:/My%2
 8. [**Hardware Bring-Up Checklist**](docs/bringup_checklist.md): 8-stage electrical verification procedure from cold checks to beamforming tests.
 9. [**Known Issues & Rev B Roadmap**](docs/known_issues_and_todo.md): Identified prototype errata, BOM substitutions, and optimizations for Revision B.
 10. [**Hardware Design Review Log**](docs/design_review_log.md): Record of design modifications and engineering decisions resolved during development.
+11. [**System Architecture & Computational Budget**](docs/system_architecture_and_compute_budget.md): Data rates, sampling-rate limits, array physics, and whether the ESP32-S3 can run SRP-PHAT localization on board (grid size, CPU and memory budget, dual-core design).
 11. [**Firmware Notes**](firmware/README.md): ESP-IDF and Arduino driver implementation notes and DMA configuration.
 
 ---

@@ -42,6 +42,7 @@ class SerialSource(threading.Thread):
         self.next_frame = self.last_seq = None
         self.running = True; self.error = None
         self.rec = None
+        self.status = {}                      # last "#SSL16 T key=value ..." line from the recorder firmware
         try:
             self.ser.reset_input_buffer()
             self.ser.write(b"STOP\nSTATUS\n"); time.sleep(0.2); self.ser.write(b"START\n")
@@ -52,6 +53,26 @@ class SerialSource(threading.Thread):
         self.running = False
         try:
             self.ser.write(b"STOP\n"); time.sleep(0.05); self.ser.close()
+        except Exception:
+            pass
+
+    def send(self, line):
+        """Send one command line to the firmware (e.g. 'START E1_P07_r1_142233', 'STOP')."""
+        try:
+            self.ser.write((line + "\n").encode("ascii"))
+        except Exception:
+            pass
+
+    def _scan_text(self, chunk):
+        """Text between packets: keep the newest '#SSL16 T ...' status line as a dict."""
+        i = chunk.rfind(b"#SSL16 T ")
+        if i < 0: return
+        j = chunk.find(b"\n", i)
+        if j < 0: return
+        try:
+            st = dict(kv.split("=", 1) for kv in chunk[i + 9:j].decode("ascii", "ignore").split() if "=" in kv)
+            st["_t"] = time.time()
+            self.status = st
         except Exception:
             pass
 
@@ -76,7 +97,9 @@ class SerialSource(threading.Thread):
                 while True:
                     hits = [i for i in (buf.find(b"SSL6"), buf.find(b"HDOA"), buf.find(b"HDST")) if i >= 0]
                     if not hits:
+                        if b"#SSL16" in buf: self._scan_text(bytes(buf))
                         del buf[:-3]; break
+                    if min(hits) > 8: self._scan_text(bytes(buf[:min(hits)]))
                     del buf[:min(hits)]
                     tag = bytes(buf[:4])
                     if tag == b"HDST":
@@ -198,7 +221,10 @@ RUN_FIELDS = ["run_id", "time", "experiment", "point", "rep", "setup", "r_m", "a
               "x_m", "y_m", "z_m", "true_az", "true_el", "true_theta", "true_phi", "est_az", "est_el", "est_theta",
               "est_phi", "az_err", "theta_err", "phi_err", "ang_err", "std_az", "std_el", "n_detect", "n_blocks",
               "detect_rate", "snr_db", "tone_hz", "source", "band_lo", "band_hi", "snr_thr", "flip_x", "flip_y",
-              "rot_deg", "temp_c", "fs", "n_samples", "gaps", "wav", "flag", "flag_reason", "notes"]
+              "rot_deg", "temp_c", "fs", "n_samples", "gaps", "wav", "flag", "flag_reason", "notes",
+              # added in logger rev 2.1 (raw 48 kHz copy on the board's SD card, firmware SSL16_Rec48)
+              "sd_wav", "sd_seen", "sd_ring_drop", "sd_err", "i2s_ovf", "board_temp_c"]
+LOGGER_REV = "2.1"
 
 
 class App:
@@ -213,7 +239,7 @@ class App:
         self.truth = None
         self.session_dir = None
         self.sess = dict(base=os.path.abspath("ssl16_campaign"), room="lab", board="board1", operator="",
-                         humidity="", background_dba="", firmware="SSL16_HDOA", notes="")
+                         humidity="", background_dba="", firmware="SSL16_Rec48", notes="")
         self._build()
         self._set_truth()
         self.root.after(100, self._tick)
@@ -439,7 +465,15 @@ class App:
         except ValueError:
             return
         self._set_truth()
-        self.meas = dict(t0=time.time(), dur=dur, res=[], gaps0=self.src.drops)
+        # The run name is fixed at the start, so the board can save its raw 48 kHz copy under the same name.
+        exp, pt = self.exp.get().strip(), self.point.get().strip()
+        rep = 1 + sum(1 for r in self.runs if r["experiment"] == exp and r["point"] == pt)
+        run_id = f"{exp}_{pt}_r{rep}_{time.strftime('%H%M%S')}"
+        st0 = dict(getattr(self.src, "status", {}) or {})
+        self.meas = dict(t0=time.time(), dur=dur, res=[], gaps0=self.src.drops, exp=exp, pt=pt, rep=rep,
+                         run_id=run_id, ovf0=st0.get("i2s_ovf"), sd_seen=False)
+        if hasattr(self.src, "send"):
+            self.src.send("START " + run_id)          # SSL16_Rec48: raw 48 kHz WAV on the SD card (/ssl16/<run_id>.wav)
         with self.src.lock:
             self.src.rec = []
         self.btn_meas.config(state="disabled")
@@ -448,11 +482,11 @@ class App:
         m = self.meas; self.meas = None
         with self.src.lock:
             chunks, self.src.rec = self.src.rec, None
+        st = dict(getattr(self.src, "status", {}) or {})
+        if hasattr(self.src, "send"):
+            self.src.send("STOP")
         self.btn_meas.config(state="normal"); self.pb["value"] = 0
-        T = self.truth; exp, pt = self.exp.get().strip(), self.point.get().strip()
-        rep = 1 + sum(1 for r in self.runs if r["experiment"] == exp and r["point"] == pt)
-        stamp = time.strftime("%H%M%S")
-        run_id = f"{exp}_{pt}_r{rep}_{stamp}"
+        T = self.truth; exp, pt, rep, run_id = m["exp"], m["pt"], m["rep"], m["run_id"]
         os.makedirs(os.path.join(self.session_dir, exp), exist_ok=True)
         wav_rel = os.path.join(exp, run_id + ".wav")
         fs = self.src.fs or 12000
@@ -468,6 +502,15 @@ class App:
                    flip_x=self.cfg["flip_x"], flip_y=self.cfg["flip_y"], rot_deg=self.cfg["rot"], temp_c=self.cfg["temp"],
                    fs=fs, n_samples=data.shape[0], gaps=self.src.drops - m["gaps0"], wav=wav_rel.replace("\\", "/"),
                    flag="", notes=self.notes.get())
+        sd_seen = bool(m["sd_seen"] or st.get("rec") == run_id)
+        ovf = ""
+        try:
+            if st.get("i2s_ovf") is not None and m["ovf0"] is not None: ovf = int(st["i2s_ovf"]) - int(m["ovf0"])
+        except ValueError:
+            pass
+        row.update(sd_wav=(run_id + ".wav") if sd_seen else "", sd_seen=int(sd_seen),
+                   sd_ring_drop=st.get("ring_drop", "") if sd_seen else "", sd_err=st.get("sd_err", ""),
+                   i2s_ovf=ovf, board_temp_c=st.get("temp", ""))
         if det:
             az = np.array([r["az"] for r in det]); el = np.array([r["el"] for r in det])
             mv = np.mean(np.exp(1j * np.radians(az)))
@@ -482,7 +525,8 @@ class App:
                        tone_hz=round(float(np.median([r["tone"] for r in det])), 0))
         self.runs.append(row)
         save_json(os.path.join(self.session_dir, exp, run_id + ".json"), dict(row, session=self.sess, gui_version=VERSION,
-                  slot_order=SLOT_ORDER, stream=self.src.kind))
+                  logger_rev=LOGGER_REV, slot_order=SLOT_ORDER, stream=self.src.kind,
+                  sd_fs=48000 if sd_seen else None, sd_slot_order=SLOT_ORDER if sd_seen else None))
         self._write_runs()
         with open(os.path.join(self.session_dir, "blocks.csv"), "a", newline="") as f:
             w = csv.writer(f)
@@ -502,6 +546,11 @@ class App:
         if row["detect_rate"] < 0.7: warn.append(f"detections only {100 * row['detect_rate']:.0f}% of blocks")
         if det and row["std_az"] > 5: warn.append(f"spread {row['std_az']:.1f}°")
         if row["gaps"]: warn.append(f"{row['gaps']} USB gaps")
+        if hasattr(self.src, "send") and st:          # recorder firmware is talking: check the SD copy
+            if not sd_seen: warn.append("board did NOT confirm the SD recording (card in? sd=ok?)")
+            if str(row["sd_ring_drop"]) not in ("", "0"): warn.append(f"SD too slow: {row['sd_ring_drop']} blocks dropped from the 48 kHz file")
+            if str(row["sd_err"]) not in ("", "0"): warn.append(f"SD write errors: {row['sd_err']}")
+            if row["i2s_ovf"] not in ("", 0): warn.append(f"I2S overflow ({row['i2s_ovf']}): samples lost")
         if warn:
             messagebox.showwarning("Check this run", "Redo this point once (protocol step 6):\n- " + "\n- ".join(warn))
 
@@ -543,6 +592,8 @@ class App:
                 self.hist.append((r["az"], r["el"])); self.trail.append((r["az"], r["el"]))
             if self.meas: self.meas["res"].append(r)
             self.last = r
+        if self.meas and self.src and getattr(self.src, "status", {}).get("rec") == self.meas["run_id"]:
+            self.meas["sd_seen"] = True
         if self.src:
             if self.src.error:
                 self.lbl_link.config(text="serial error: " + self.src.error, foreground="red")

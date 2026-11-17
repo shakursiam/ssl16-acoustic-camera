@@ -1,0 +1,18 @@
+# Decision log
+
+Every choice that affects a result in the paper is recorded here, so the Methods section can be written from it.
+Status is one of: **decided** (Siam approved), **proposed** (waiting for Siam), **open**.
+
+| # | Date | Topic | Decision | Reason | Status |
+|---|---|---|---|---|---|
+| 1 | 2026-11-17 | Recording rate | Campaign audio of record is raw 48 kHz, 16-bit, 16 channels, written to microSD by `SSL16_Rec48`. The 12 kHz USB stream is saved by the PC logger as a live copy and backup. | Full-speed USB cannot carry 1.536 MB/s. The 12 kHz path is filtered (flat to 4.5 kHz, −50 dB from 6 kHz), which would limit E0 channel-skew measurements and the 5–6 kHz band. | proposed: depends on `SSL16_Rec48` compiling and passing the Day 0 checks in `lab_guide_bn.md` |
+| 2 | 2026-11-17 | Channel order in files | All campaign WAV files are in TDM slot order (M2 M7 M10 M15 M1 M4 M9 M12 M3 M6 M11 M14 M5 M8 M13 M16), the order assumed by `MICS` in `ssl16_core.py`. | `SSL16_WavRecorder_v4.1` writes mic order (M1…M16) by default. Mixing the two conventions would scramble the geometry without any error. Any file from v4.1 must be remapped before analysis; the integrity checker will read the order from each run's `.txt`. | proposed |
+| 3 | 2026-11-17 | Speed of sound | c = 331.3·sqrt(1 + T/273.15) m/s, T in °C from the logged temperature. Humidity is logged per session and its effect goes into the uncertainty budget. | This is the ideal-gas (dry air) form; the linear form 331.3 + 0.606·T in `ssl16_core.py` is its first-order approximation and differs by about 0.1% at 26 °C. Reference to check and cite: O. Cramer, J. Acoust. Soc. Am. 93(5), 2510–2516, 1993, doi:10.1121/1.405827 (located, not yet opened; do not cite until read). | proposed; `ssl16_core.py` not changed yet |
+| 4 | 2026-11-17 | Run naming | The PC logger fixes the run ID when Measure is pressed and sends `START <run_id>` to the board, so the SD file and the PC file share one name. | Lets the 48 kHz SD file be matched to its metadata without manual bookkeeping. | implemented in logger rev 2.1, untested on hardware |
+
+## Open items
+
+- Tap test of the slot map: not done (needed for claim C1).
+- Array orientation / mirror check (E0.5): not done. No E1–E8 data is valid until it passes.
+- SD card write speed (`SSL16_SDTest`): not measured.
+- Analysis parameters (band, grid, frame length, bin selection) for 48 kHz input: to be fixed before any accuracy number is computed, and not tuned on the reported data.

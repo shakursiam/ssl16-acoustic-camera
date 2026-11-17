@@ -154,13 +154,47 @@ About 1.5 hours on the first day. On later days do only E0.1, E0.2 and E0.5 (abo
 
 **How to pass E0.5 (not done yet, so it is the most important step on the first day):**
 
-1. Put the source at the +45° point. Look at θ in the GUI's estimate.
-   - About **+45°**: correct.
-   - About **−45°**: toggle **flip x** in Settings and measure again.
-2. Put the source high (φ ≈ +30°). Look at φ in the GUI.
-   - **Positive**: correct. If it is negative, toggle **flip y** and measure again.
-3. When both are correct, write the final flip x / flip y / rot values in the session notes. **Do not change them again for the whole campaign.**
-4. If θ or φ is far from 45° / 30° (for example, wrong by more than 20°) and the flips do not fix it: stop, and give me the tap-test result and these two runs.
+*Why:* the mic coordinates in the software come from the PCB drawing. The mics sit on the bottom side and the board can be mounted turned or upside down, so the software's left/right or up/down may be the mirror of the real one. E0.5 finds this with two known sound positions and fixes it once, with three settings: flip x, flip y, rotate.
+
+**A. Fix the physical directions first (once, never change):**
+
+1. Mount the board in Setup A: centre 1.20 m above the floor, sound-hole face towards the source area, vertical.
+2. Decide which board edge is "up" (for example, the edge where the silkscreen text reads upright). Put a tape label **UP** on that edge.
+3. Stand in front of the board, facing the sound-hole face. Put a tape label **RIGHT** on the edge to your right.
+4. Rule for the whole campaign: **+θ = your right side when you stand in front of the board and face it.** +φ = up.
+5. Take a photo of the board from the front, with both labels visible. Every later mounting (E8 re-mount, other rooms) must match this photo.
+
+**B. Mark the points (r = 2.00 m, chord from R: c = 2r·sin(θ/2)):**
+
+| Point | Where | Chord from R / height |
+|---|---|---|
+| `ORI_T45` | θ = +45° (your right) | chord 153.1 cm, source height 1.20 m |
+| `ORI_T-45` | θ = −45° (your left) | chord 153.1 cm, source height 1.20 m |
+| `ORI_P30` | θ = 0°, **r = 1.50 m** on the 0° line | source height **2.07 m** (φ = atan(0.87 / 1.50) ≈ +30.1°) |
+
+**C. In the campaign GUI** (`ssl16_buzzer_gui.py`, port COM3 on this PC):
+
+1. Settings: **flip x off, flip y off, rotate 0**, band 1500–5000 Hz, temperature from the thermometer.
+2. Source: the main 2.8 kHz buzzer. experiment = `E0`.
+3. Setup A fields for each point: range, θ, source height, board height = 1.20. Example for `ORI_T45`: r 2.0, θ 45, src h 1.20, board h 1.20.
+
+**D. Steps:**
+
+1. **`ORI_T45`** (source on your right). Measure once and read the estimated θ:
+   - about **+45°** → x is correct.
+   - about **−45°** → turn **flip x** on, Measure again; it must now be about +45°.
+   - θ near 0° but φ large (about ±45°) → the board is turned 90°. φ positive → set rotate = **−90**; φ negative → rotate = **+90**. Measure again.
+2. **`ORI_T-45`** (source on your left), same settings: θ must be about **−45°**. This confirms step 1 was not a coincidence.
+3. **`ORI_P30`** (source high). Read φ:
+   - about **+30°** → y is correct.
+   - about **−30°** → turn **flip y** on, Measure again. (flip y does not change θ.)
+4. **Final check with the final settings:** `ORI_T45` and `ORI_P30` once more, 3 repetitions each (normal Measure). These are the E0.5 runs of record.
+
+**Pass:** in the final check, θ and φ have the right sign and each is within **10°** of the true value (45° / 30°). The finer offset is handled in E0.6 (boresight), not here.
+
+**E. Record:** write `flip_x`, `flip_y`, `rot_deg` and the photo file name in the session notes and tell me. The GUI also saves them in every run's JSON. **Do not change them again for the whole campaign.** Do not take E1–E8 data with any other settings.
+
+**If it does not pass:** if θ or φ is wrong by more than 20° and no flip/rotate fixes it, stop and send me the session folder. Do not try other settings by guessing.
 
 **Extra work for analysis A2 (must be done before the lab closes):**
 

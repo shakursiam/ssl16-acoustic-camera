@@ -168,15 +168,19 @@ static void ring_push(const uint8_t* p, uint32_t n) {    // audio loop only (sin
   rec_blocks++;
 }
 
+static const char* sd_mode = "-";                          // which mount attempt succeeded (bus width / clock)
+
 static bool sd_mount() {
   pinMode(PIN_SD_CD, INPUT_PULLUP);
+  sd_mode = "-";
   if (digitalRead(PIN_SD_CD) != LOW) return false;          // no card
   SD_MMC.setPins(PIN_SD_CLK, PIN_SD_CMD, PIN_SD_D0, PIN_SD_D1, PIN_SD_D2, PIN_SD_D3);
-  if (SD_MMC.begin("/sdcard", false, false, SDMMC_FREQ_DEFAULT)) return true;   // 4-bit, 20 MHz
+  if (SD_MMC.begin("/sdcard", false, false, SDMMC_FREQ_DEFAULT)) { sd_mode = "4bit_20MHz"; return true; }
   SD_MMC.end();
-  if (SD_MMC.begin("/sdcard", false, false, 10000)) return true;                // 4-bit, 10 MHz
+  if (SD_MMC.begin("/sdcard", false, false, 10000)) { sd_mode = "4bit_10MHz"; return true; }
   SD_MMC.end();
-  return SD_MMC.begin("/sdcard", true, false, 10000);                           // 1-bit, 10 MHz
+  if (SD_MMC.begin("/sdcard", true, false, 10000)) { sd_mode = "1bit_10MHz"; return true; }
+  return false;
 }
 
 static void put16(uint8_t* p, uint16_t v) { p[0] = v; p[1] = v >> 8; }
@@ -279,7 +283,7 @@ static void sd_writer(void*) {
                     (unsigned long)ring_drop, FRAMES, (unsigned long)sd_err, temp_c);
           fm.printf("i2s_overflows_during_run=%lu (must be 0; otherwise samples were lost before the recorder)\n",
                     (unsigned long)(i2s_ovf - ovf_start));
-          fm.printf("ring_bytes=%lu\n", (unsigned long)RING_BYTES);
+          fm.printf("ring_bytes=%lu\nsd_mode=%s\n", (unsigned long)RING_BYTES, sd_mode);
           fm.close();
         }
         req_stop = false;
@@ -385,10 +389,10 @@ bool startI2S() {
 const char* sd_str() { return sd_state == SD_OK ? "ok" : sd_state == SD_FAIL ? "FAIL" : "none"; }
 
 void report(const char* what) {
-  say("%s fw=%s adc_ack=%c%c%c%c i2c_fail=%lu i2s=%s tmp112=%s sd=%s psram=%s timeouts=%lu short=%lu",
+  say("%s fw=%s adc_ack=%c%c%c%c i2c_fail=%lu i2s=%s tmp112=%s sd=%s sd_mode=%s psram=%s timeouts=%lu short=%lu",
       what, FW_NAME,
       (adc_ack & 1) ? '1' : '-', (adc_ack & 2) ? '2' : '-', (adc_ack & 4) ? '3' : '-', (adc_ack & 8) ? '4' : '-',
-      (unsigned long)i2c_fail, i2s_ok ? "ok" : "FAIL", tmp_ok ? "ok" : "FAIL", sd_str(), ring ? "ok" : "FAIL",
+      (unsigned long)i2c_fail, i2s_ok ? "ok" : "FAIL", tmp_ok ? "ok" : "FAIL", sd_str(), sd_mode, ring ? "ok" : "FAIL",
       (unsigned long)timeouts, (unsigned long)short_reads);
 }
 

@@ -15,4 +15,5 @@ Status is one of: **decided** (Siam approved), **proposed** (waiting for Siam), 
 - Tap test of the slot map: not done (needed for claim C1).
 - Array orientation / mirror check (E0.5): not done. No E1–E8 data is valid until it passes.
 - SD card write speed (`SSL16_SDTest`): not measured.
+- 2026-11-17 first `SSL16_Rec48` run (`test48`, 30 s): firmware boots and streams (USB 101 pkt/s, 0 lost; PC 12 kHz file clean, 2993 packets, no clipping, all 16 channels alive at −67 to −70 dBFS RMS in a quiet room). **SD path fails the Day 0 check:** SD run lasted 26 s; 2037 blocks dropped (≈ 20.4 s missing), SD file 9.7 MB (≈ 6.3 s of audio) instead of ≈ 40 MB, i.e. about 0.37 MB/s sustained against 1.54 MB/s needed. Cause not yet known (card speed vs. 1-bit fallback). `sd_mode` added to the status line and `.txt` to tell which. Decision #1 cannot be adopted until this passes.
 - Analysis parameters (band, grid, frame length, bin selection) for 48 kHz input: to be fixed before any accuracy number is computed, and not tuned on the reported data.

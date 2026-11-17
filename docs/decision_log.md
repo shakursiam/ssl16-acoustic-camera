@@ -12,7 +12,7 @@ Status is one of: **decided** (Siam approved), **proposed** (waiting for Siam), 
 
 ## Open items
 
-- Tap test of the slot map: not done (needed for claim C1).
+- Tap test of the slot map: done by Siam on 2026-11-17, all 16 mics respond individually (reported, not yet checked from files). For claim C1 the tap recordings themselves are needed as evidence; location of the files to be confirmed.
 - Array orientation / mirror check (E0.5): not done. No E1–E8 data is valid until it passes.
 - SD card write speed (`SSL16_SDTest`): not measured.
 - 2026-11-17 first `SSL16_Rec48` run (`test48`, 30 s): firmware boots and streams (USB 101 pkt/s, 0 lost; PC 12 kHz file clean, 2993 packets, no clipping, all 16 channels alive at −67 to −70 dBFS RMS in a quiet room). **SD path fails the Day 0 check:** SD run lasted 26 s; 2037 blocks dropped (≈ 20.4 s missing), SD file 9.7 MB (≈ 6.3 s of audio) instead of ≈ 40 MB, i.e. about 0.37 MB/s sustained against 1.54 MB/s needed. `SSL16_SDTest` on the same card then gave 4-bit 20 MHz, 29.8 GB SDHC/SDXC, write 6.13 MB/s, read 4.35 MB/s, verify PASS — so the card is fast enough. Cause: Rec48 v1.0 wrote straight from the PSRAM ring; the SD driver cannot DMA from PSRAM and falls back to single 512-byte sectors (SDTest uses an internal DMA buffer). Fixed in Rec48 v1.1 (copy through a 32 KB internal DMA buffer); v1.1 not yet compiled or tested. Decision #1 cannot be adopted until a v1.1 run shows ring_drop = 0.

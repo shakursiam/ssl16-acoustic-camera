@@ -58,7 +58,9 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
-#define FW_NAME    "SSL16_Rec48_v1.0"         // raw 48 kHz to SD; based on SSL16_WavRecorder_v4.1
+#define FW_NAME    "SSL16_Rec48_v1.1"         // raw 48 kHz to SD; based on SSL16_WavRecorder_v4.1
+// v1.1 (2026-11-17): SD writes go through a 32 KB internal-RAM DMA buffer (v1.0 wrote straight from PSRAM
+//                    and reached only ~0.37 MB/s -> 2037 dropped blocks in the first 26 s test); sd_mode reported.
 
 #define PIN_SDA    8
 #define PIN_SCL    9
@@ -205,8 +207,19 @@ static bool wav_write_header(File& f, uint32_t data_bytes) {
   return ok;
 }
 
+// Write n bytes (n <= SD_CHUNK, not wrapping) from the PSRAM ring to the file through an internal-RAM
+// DMA buffer. The SD driver cannot DMA from PSRAM: given a PSRAM pointer it falls back to one 512-byte
+// sector per command, which measured ~0.37 MB/s on 2026-11-17 (SSL16_SDTest with an internal buffer: 6.1 MB/s).
+static uint8_t* sd_dma = NULL;
+static size_t ring_to_file(File& f, uint32_t t, uint32_t n) {
+  if (!sd_dma) return f.write(ring + t, n);               // fallback (slow) if the DMA buffer could not be allocated
+  memcpy(sd_dma, ring + t, n);
+  return f.write(sd_dma, n);
+}
+
 static void sd_writer(void*) {
   File fwav, ftmp;
+  sd_dma = (uint8_t*)heap_caps_malloc(SD_CHUNK, MALLOC_CAP_DMA | MALLOC_CAP_INTERNAL);
   sd_state = sd_mount() ? SD_OK : (digitalRead(PIN_SD_CD) == LOW ? SD_FAIL : SD_NONE);
   if (sd_state == SD_OK && !SD_MMC.exists("/ssl16")) SD_MMC.mkdir("/ssl16");
   uint32_t t_start = 0, seq_start = 0, t_hdr = 0, ovf_start = 0;
@@ -245,7 +258,7 @@ static void sd_writer(void*) {
       while (used >= SD_CHUNK && !req_stop) {
         uint32_t t = ring_tail % RING_BYTES;
         uint32_t n = min<uint32_t>(min<uint32_t>(used, SD_CHUNK), RING_BYTES - t);
-        size_t w = fwav.write(ring + t, n);
+        size_t w = ring_to_file(fwav, t, n);
         if (w != n) { sd_err++; req_stop = true; if (w == 0) break; }
         ring_tail += w; rec_bytes += w; used = ring_used();
       }
@@ -263,8 +276,8 @@ static void sd_writer(void*) {
         // drain everything that is still in the ring
         uint32_t u = ring_used();
         while (u > 0) {
-          uint32_t t = ring_tail % RING_BYTES, n = min<uint32_t>(u, RING_BYTES - t);
-          size_t w = fwav.write(ring + t, n); if (w == 0) { sd_err++; break; }
+          uint32_t t = ring_tail % RING_BYTES, n = min<uint32_t>(min<uint32_t>(u, SD_CHUNK), RING_BYTES - t);
+          size_t w = ring_to_file(fwav, t, n); if (w == 0) { sd_err++; break; }
           ring_tail += w; rec_bytes += w; u = ring_used();
         }
         if (!wav_write_header(fwav, rec_bytes)) sd_err++;   // final sizes
@@ -283,7 +296,7 @@ static void sd_writer(void*) {
                     (unsigned long)ring_drop, FRAMES, (unsigned long)sd_err, temp_c);
           fm.printf("i2s_overflows_during_run=%lu (must be 0; otherwise samples were lost before the recorder)\n",
                     (unsigned long)(i2s_ovf - ovf_start));
-          fm.printf("ring_bytes=%lu\nsd_mode=%s\n", (unsigned long)RING_BYTES, sd_mode);
+          fm.printf("ring_bytes=%lu\nsd_mode=%s\nsd_dma_buffer=%s\n", (unsigned long)RING_BYTES, sd_mode, sd_dma ? "internal" : "NONE (slow path)");
           fm.close();
         }
         req_stop = false;
@@ -389,10 +402,10 @@ bool startI2S() {
 const char* sd_str() { return sd_state == SD_OK ? "ok" : sd_state == SD_FAIL ? "FAIL" : "none"; }
 
 void report(const char* what) {
-  say("%s fw=%s adc_ack=%c%c%c%c i2c_fail=%lu i2s=%s tmp112=%s sd=%s sd_mode=%s psram=%s timeouts=%lu short=%lu",
+  say("%s fw=%s adc_ack=%c%c%c%c i2c_fail=%lu i2s=%s tmp112=%s sd=%s sd_mode=%s sd_dma=%s psram=%s timeouts=%lu short=%lu",
       what, FW_NAME,
       (adc_ack & 1) ? '1' : '-', (adc_ack & 2) ? '2' : '-', (adc_ack & 4) ? '3' : '-', (adc_ack & 8) ? '4' : '-',
-      (unsigned long)i2c_fail, i2s_ok ? "ok" : "FAIL", tmp_ok ? "ok" : "FAIL", sd_str(), sd_mode, ring ? "ok" : "FAIL",
+      (unsigned long)i2c_fail, i2s_ok ? "ok" : "FAIL", tmp_ok ? "ok" : "FAIL", sd_str(), sd_mode, sd_dma ? "ok" : "FAIL", ring ? "ok" : "FAIL",
       (unsigned long)timeouts, (unsigned long)short_reads);
 }
 

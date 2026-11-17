@@ -58,7 +58,9 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
-#define FW_NAME    "SSL16_Rec48_v1.1"         // raw 48 kHz to SD; based on SSL16_WavRecorder_v4.1
+#define FW_NAME    "SSL16_Rec48_v1.2"         // raw 48 kHz to SD; based on SSL16_WavRecorder_v4.1
+// v1.2 (2026-11-17): first_seq in the .txt is the seq of the first block actually in the WAV. In v1.0/v1.1 it
+//                    was read when the file opened and was one block early (test48b: real offset 6 packets, .txt said 5).
 // v1.1 (2026-11-17): SD writes go through a 32 KB internal-RAM DMA buffer (v1.0 wrote straight from PSRAM
 //                    and reached only ~0.37 MB/s -> 2037 dropped blocks in the first 26 s test); sd_mode reported.
 
@@ -155,6 +157,7 @@ static uint8_t*          ring = NULL;
 static volatile uint32_t ring_head = 0, ring_tail = 0;   // free-running byte counters
 static volatile uint32_t ring_drop = 0, rec_bytes = 0, rec_blocks = 0;
 static volatile uint32_t sd_err = 0;
+static volatile uint32_t rec_first_seq = 0;              // USB packet seq that matches WAV sample 0 (x4 at 48 kHz)
 static QueueHandle_t     tq;                              // temperature records for the run's _temp.csv
 struct TempRec { uint32_t ms, seq; float t; };
 
@@ -162,6 +165,7 @@ static uint32_t ring_used() { return ring_head - ring_tail; }
 
 static void ring_push(const uint8_t* p, uint32_t n) {    // audio loop only (single producer)
   if (!ring || !recording) return;
+  if (rec_blocks == 0 && ring_drop == 0) rec_first_seq = seq;  // seq of the first block in the WAV
   if (RING_BYTES - ring_used() < n) { ring_drop++; return; }   // drop whole blocks, never split
   uint32_t h = ring_head % RING_BYTES, first = min<uint32_t>(n, RING_BYTES - h);
   memcpy(ring + h, p, first);
@@ -290,7 +294,7 @@ static void sd_writer(void*) {
           fm.print("wav_channel_order=");                    // TDM slot order
           for (int s = 0; s < NCH; s++) fm.printf("M%d%s", SLOT_MIC[s], s == NCH - 1 ? "\n" : " ");
           fm.printf("start_board_ms=%lu\nstop_board_ms=%lu\nfirst_seq=%lu\nblocks=%lu\nsamples_per_channel=%lu\nbytes=%lu\n",
-                    (unsigned long)t_start, (unsigned long)millis(), (unsigned long)seq_start,
+                    (unsigned long)t_start, (unsigned long)millis(), (unsigned long)rec_first_seq,
                     (unsigned long)rec_blocks, (unsigned long)(rec_bytes / (NCH * 2)), (unsigned long)rec_bytes);
           fm.printf("ring_dropped_blocks=%lu (each = %d samples missing from the WAV)\nsd_errors=%lu\nlast_temp_c=%.4f\n",
                     (unsigned long)ring_drop, FRAMES, (unsigned long)sd_err, temp_c);

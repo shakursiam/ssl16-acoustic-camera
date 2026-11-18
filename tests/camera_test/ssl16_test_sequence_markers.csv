@@ -1,0 +1,8 @@
+segment,start_s,end_s
+lead_in_silence,0.0,2.0
+sync_start,2.0,4.05
+noise_bursts,6.05,26.05
+speech,28.05,48.05
+vehicle_horns,50.05,70.05
+sync_end,72.05,74.1
+lead_out_silence,74.1,76.1

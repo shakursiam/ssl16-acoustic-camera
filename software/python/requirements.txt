@@ -2,3 +2,8 @@ numpy>=1.24
 pyserial>=3.5
 matplotlib>=3.7
 scipy>=1.10   # optional: Wilcoxon tests in ssl16_analyze.py
+# camera overlay (ssl16_video_overlay.py) and camera calibration (ssl16_cam_calib.py)
+scipy>=1.10   # required by ssl16_video_overlay.py (filters, correlation)
+Pillow>=10
+av>=12        # PyAV: reads the phone video / audio with true timestamps, writes the overlay video
+opencv-python-headless>=4.8   # only for ssl16_cam_calib.py
